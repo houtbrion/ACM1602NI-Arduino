@@ -38,8 +38,19 @@
 #include <inttypes.h>
 #include "Print.h"
 
+// type
+#define ACM_TYPE_1602 0
+#define ACM_TYPE_2004 1
+
+// size
+#define ACM1602_COLS 16
+#define ACM1602_LINES 2
+#define ACM2004_COLS 20
+#define ACM2004_LINES 4
+
 // slave address
 #define ACM1602NI_SLAVE_ADDRESS 0x50
+#define ACM2004_SLAVE_ADDRESS 0x3F
 
 // commands
 #define ACM1602NI_CLEARDISPLAY 0x01
@@ -82,14 +93,14 @@
 // control byte
 #define ACM1602NI_COMMAND 0x00
 #define ACM1602NI_DATA 0x80
-
+#define ACM2004_DATA 0x40
 
 class ACM1602NI : public Print {
 public:
-  ACM1602NI();
-  ACM1602NI(uint8_t address);
+  ACM1602NI(uint8_t type=ACM_TYPE_1602);
+  ACM1602NI(uint8_t type, uint8_t address);
   void init(uint8_t address);
-  void begin(uint8_t cols=16, uint8_t rows=2);
+  void begin(uint8_t cols=ACM1602_COLS, uint8_t rows=ACM1602_LINES);
   
   void clear();
   void home();
@@ -118,13 +129,15 @@ private:
   void send(uint8_t value, uint8_t rs);
 
   uint8_t _address;
+  uint8_t _type;
+  uint8_t _sendData;
 
   uint8_t _displayfunction;
   uint8_t _displaycontrol;
   uint8_t _displaymode;
 
   uint8_t _numlines;
-  uint8_t _row_offsets[2] = {0x00, 0x40};
+  uint8_t _row_offsets[4] = {0x00, 0x40, 0x14 , 0x54};
 };
 
 #endif // __ACM1602NI_H

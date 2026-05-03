@@ -32,13 +32,28 @@
 #include "Wire.h"
 #include "Arduino.h"
 
-ACM1602NI::ACM1602NI()
+ACM1602NI::ACM1602NI(uint8_t type)
 {
-  init(ACM1602NI_SLAVE_ADDRESS);
+  if (type==ACM_TYPE_2004) {
+    _type=ACM_TYPE_2004;
+    init(ACM2004_SLAVE_ADDRESS);
+    _sendData=ACM2004_DATA;
+  } else {
+    _type=ACM_TYPE_1602;
+    init(ACM1602NI_SLAVE_ADDRESS);
+    _sendData=ACM1602NI_DATA;
+  }
 }
 
-ACM1602NI::ACM1602NI(uint8_t address)
+ACM1602NI::ACM1602NI(uint8_t type, uint8_t address)
 {
+  if (type==ACM_TYPE_2004) {
+    _type=ACM_TYPE_2004;
+    _sendData=ACM2004_DATA;
+  } else {
+    _type=ACM_TYPE_1602;
+    _sendData=ACM1602NI_DATA;
+  }
   init(address);
 }
 
@@ -175,7 +190,7 @@ inline void ACM1602NI::command(uint8_t value) {
 }
 
 inline size_t ACM1602NI::write(uint8_t value) {
-  send(value, ACM1602NI_DATA);
+  send(value, _sendData);
   return 1; // assume sucess
 }
 
